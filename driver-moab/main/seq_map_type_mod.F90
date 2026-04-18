@@ -46,19 +46,25 @@ module seq_map_type_mod
      character*16            :: mbname
      integer                 :: tag_entity_type
      integer                 :: nentities ! this should be used only if copy_only is true
-     !
-     ! MOAB-specific coordinate arrays for vector mapping
-     real(R8), pointer       :: slon_s_moab(:)
+      !
+      ! MOAB-specific coordinate arrays for vector mapping
+      real(R8), pointer       :: slon_s_moab(:)
      real(R8), pointer       :: clon_s_moab(:)
      real(R8), pointer       :: slat_s_moab(:)
      real(R8), pointer       :: clat_s_moab(:)
      real(R8), pointer       :: slon_d_moab(:)
      real(R8), pointer       :: clon_d_moab(:)
      real(R8), pointer       :: slat_d_moab(:)
-     real(R8), pointer       :: clat_d_moab(:)
-     !
+      real(R8), pointer       :: clat_d_moab(:)
+      !
+      !---- optional nonlinear map; see seq_nlmap_mod.F90
+      logical                 :: nl_available, nl_conservative
+      type(mct_ggrid),pointer :: dom_cx_s, dom_cx_d
+      type(mct_sMatp)         :: nl_sMatp
+      character(CX)           :: nl_mapfile
+      real(R8), allocatable   :: frac_s(:), frac_d(:)
 
-  end type seq_map
+   end type seq_map
   public seq_map
 
   !--------------------------------------------------------------------------
@@ -167,10 +173,15 @@ contains
     mapper%src_mbid  = -1
     mapper%tgt_mbid  = -1
     mapper%intx_mbid = -1
-    mapper%tag_entity_type = 1 ! cells most of the time when we need it
-    mapper%mbname    = "undefined"
-    ! Initialize MOAB coordinate pointers
-    nullify(mapper%slon_s_moab)
+     mapper%tag_entity_type = 1 ! cells most of the time when we need it
+     mapper%mbname    = "undefined"
+     mapper%nl_available = .false.
+     mapper%nl_conservative = .false.
+     mapper%nl_mapfile = "undefined"
+     nullify(mapper%dom_cx_s)
+     nullify(mapper%dom_cx_d)
+     ! Initialize MOAB coordinate pointers
+     nullify(mapper%slon_s_moab)
     nullify(mapper%clon_s_moab)
     nullify(mapper%slat_s_moab)
     nullify(mapper%clat_s_moab)
