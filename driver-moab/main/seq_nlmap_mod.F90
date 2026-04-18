@@ -144,8 +144,7 @@ module seq_nlmap_mod
   !-----------------------------------------------------------------------------
   
   use shr_kind_mod     , only: R8 => SHR_KIND_R8, IN => SHR_KIND_IN, I8 => SHR_KIND_I8, &
-                               SHR_KIND_CS
-  use shr_kind_mod     , only: CX => SHR_KIND_CX
+                               SHR_KIND_CS, CX => SHR_KIND_CX
   use shr_sys_mod
   use shr_const_mod
   use mct_mod
@@ -253,7 +252,7 @@ contains
     arrsize = lsize_d
     tagname = 'frac'//C_NULL_CHAR
     ierr = iMOAB_GetDoubleTagStorage(mapper%tgt_mbid, tagname, arrsize, ent_type, mapper%frac_d)
-    if (ierr .ne. 0) then
+    if (ierr /= 0) then
        call shr_sys_abort('seq_nlmap_init_a2oi_cons ERROR: Failed to get frac tag from target MOAB mesh.')
     end if
 
@@ -290,7 +289,7 @@ contains
     arrsize = lsize_d
     tagname = 'frac'//C_NULL_CHAR
     ierr = iMOAB_GetDoubleTagStorage(mapper%tgt_mbid, tagname, arrsize, ent_type, mapper%frac_d)
-    if (ierr .ne. 0) then
+    if (ierr /= 0) then
        call shr_sys_abort('seq_nlmap_init_a2l_cons ERROR: Failed to get frac tag from target MOAB mesh.')
     end if
 
@@ -423,7 +422,7 @@ contains
     integer(IN) :: lsize_i_moab, lsize_o_moab, ent_type, arrsize
     character(len=128) :: msg
     character(len=128) :: tagname
-    character(CL) :: fldname
+    character(CX) :: fldname
     logical :: amroot, verbose, found, lnorm, zero
     real(r8) :: tmp, area, lo, hi, y, frac
     real(r8), allocatable, dimension(:) :: lmins, gmins, lmaxs, gmaxs, glbl_masses, gwts
@@ -564,12 +563,12 @@ contains
         tagname = afldname//C_NULL_CHAR
         arrsize = lsize_i
         ierr = iMOAB_GetDoubleTagStorage(mapper%src_mbid, tagname, arrsize, ent_type, area_s)
-        if (ierr .ne. 0) then
+        if (ierr /= 0) then
            call shr_sys_abort(subname//' ERROR: Failed to get aream tag from source MOAB mesh.')
         end if
         arrsize = lsize_o
         ierr = iMOAB_GetDoubleTagStorage(mapper%tgt_mbid, tagname, arrsize, ent_type, area_d)
-        if (ierr .ne. 0) then
+        if (ierr /= 0) then
            call shr_sys_abort(subname//' ERROR: Failed to get aream tag from target MOAB mesh.')
         end if
         nfld = 2*natt
@@ -847,7 +846,7 @@ contains
     ysize = mct_aVect_lsize(yAV)
     if (size(lo,2) /= ysize) then
        print *, 'nlmap> size(lo,1),ysize =',size(lo,2),ysize
-       call shr_sys_abort('(seq_map_avNormArr) ERROR: lo,hi and y sizes do not match')
+        call shr_sys_abort('(sMat_avMult_and_calc_bounds) ERROR: lo,hi and y sizes do not match')
     end if
 
     ! x -> x'
